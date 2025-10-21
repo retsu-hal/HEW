@@ -124,7 +124,32 @@ void Player_Finalize(void)
 void Player_Update()
 {
 	Mouse_GetState(&ms);
+	float sensitivity = 0.01f;	//マウス加速度
+	static bool relativeMode = false;	//モード切替（true:相対/false:絶対）
 
+	bool suppressDelta = false;
+
+	static bool prevRight = false;
+	if (ms.rightButton && !prevRight) {
+		relativeMode = !relativeMode;
+		Mouse_SetMode(relativeMode ? MOUSE_POSITION_MODE_RELATIVE
+			: MOUSE_POSITION_MODE_ABSOLUTE);
+
+		suppressDelta = true;
+	}
+
+	prevRight = ms.rightButton;
+
+	if (ms.positionMode == MOUSE_POSITION_MODE_RELATIVE)
+	{
+		if (!suppressDelta)
+		{
+			Position.x += ms.x * sensitivity;
+			Position.y -= ms.y * sensitivity;
+		}
+	}
+
+	
 
 	if (Keyboard_IsKeyDown(KK_W))
 	{

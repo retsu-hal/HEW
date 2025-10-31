@@ -8,6 +8,7 @@
 #include "fade.h"
 #include "player.h"
 #include "mouse.h"
+#include"controller.h"
 using namespace DirectX;
 
 //=========================================================================================================
@@ -123,6 +124,10 @@ void Player_Finalize(void)
 //=========================================================================================================
 void Player_Update()
 {
+
+	static Controller pad(0);  
+	pad.Update();               
+
 	Mouse_GetState(&ms);
 	float sensitivity = 0.01f;	//マウス加速度
 	static bool relativeMode = false;	//モード切替（true:相対/false:絶対）
@@ -149,7 +154,22 @@ void Player_Update()
 		}
 	}
 
-	
+	//--------------------------------------------
+   // コントローラー入力処理
+   //--------------------------------------------
+	if (pad.IsConnected())
+	{
+		// 左スティックで移動
+		Position.x += pad.GetLeftStickX() * 0.5f;
+		Position.z += pad.GetLeftStickY() * 0.5f;
+
+		// Aボタンでジャンプ（例）
+		if (pad.IsButtonPressed(XINPUT_GAMEPAD_A))
+		{
+			Position.y += 0.1f;
+		}
+	}
+
 
 	if (Keyboard_IsKeyDown(KK_W))
 	{
